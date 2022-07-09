@@ -1,8 +1,10 @@
 const http = require("http");
 const mongoose = require("mongoose");
 const app = require("./app");
+require("dotenv").config();
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8000;
+const MONGO_URL = process.env.MONGO_URL;
 const server = http.createServer(app);
 
 mongoose.connection.once("open", () => {
@@ -13,10 +15,11 @@ mongoose.connection.on("error", (err) => {
   console.log(err.message);
 });
 
-mongoose.connect(
-  "mongodb+srv://aayush:r4pJ8CofJRvQg3vu@cluster0.3n05x.mongodb.net/?retryWrites=true&w=majority"
-);
+async function startServer() {
+  await mongoose.connect(MONGO_URL);
+  server.listen(PORT, () => {
+    console.log(`Listening on http://localhost:${PORT}`);
+  });
+}
 
-server.listen(PORT, () => {
-  console.log(`Listening on http://localhost:${PORT}`);
-});
+startServer();
